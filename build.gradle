@@ -6,12 +6,7 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-    dependencies {
-        classpath 'org.ajoberstar:gradle-git:1.7.2'
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 }
 
@@ -35,8 +30,7 @@ if (version == 'unspecified') {
     version = getVersionName()
 }
 
-//TODO Do some other way
-//ext.repo = Grgit.open(project.file('.'))
+ext.repo = Grgit.open(currentDir: project.file('.'))
 
 
 configurations {
@@ -67,6 +61,7 @@ uploadArchives {
 
 dependencies {
     deployerJars 'org.apache.maven.wagon:wagon-ssh:3.3.4'
+    compile 'org.ajoberstar.grgit:grgit-gradle:4.0.1'
 }
 
 ext.compileDate = new Date();
@@ -76,6 +71,8 @@ ext.yyyymmdd = (new SimpleDateFormat('yyyyMMDD')).format(ext.compileDate);
 repositories {
     mavenLocal()
     mavenCentral()
+    jcenter()
+    maven { url 'https://plugins.gradle.org/m2/' }
     maven {
         url = 'http://maptool.craigs-stuff.net/repo/'
     }
@@ -91,7 +88,7 @@ def getVersionName() {
     if (project.hasProperty('buildVersion')) {
         return buildVersion
     } else {
-        def repo = Grgit.open(project.file('.'))
+        def repo = Grgit.open(currentDir: project.file('.'))
         def tagName = repo.tag.list()[0].fullName.replace('refs/tags/', '')
         def tagCommit = repo.tag.list()[0].commit.id
         def headCommit = repo.head().id
